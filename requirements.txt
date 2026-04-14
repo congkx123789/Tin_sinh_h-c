@@ -1,0 +1,13 @@
+torch>=2.0.0
+torchvision
+torchaudio
+mamba-ssm
+pandas
+numpy
+scikit-learn
+lifelines
+pyyaml
+matplotlib
+seaborn
+tqdm
+ipykernel

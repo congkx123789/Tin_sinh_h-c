@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.flakes/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data & Models (Crucial for deep learning)
+data/
+!data/README.md
+checkpoints/
+models/*.pth
+models/*.pt
+models/*.h5
+
+# Virtual Environment
+venv/
+.venv/
+env/
+bin/
+lib/
+share/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+
+# Notebooks
+.ipynb_checkpoints/

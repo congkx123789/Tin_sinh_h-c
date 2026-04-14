@@ -1,0 +1,27 @@
+# Training Configurations
+
+data:
+  raw_path: "data/raw/"
+  processed_path: "data/processed/"
+  gene_expression_file: "RNA_Seq.tsv"
+  clinical_file: "Clinical.csv"
+
+autoencoder:
+  input_dim: 1000  # Will be updated based on preprocessed data
+  latent_dim: 128
+  learning_rate: 0.001
+  batch_size: 32
+  epochs: 100
+  noise_factor: 0.2
+
+mamba_survival:
+  d_model: 128
+  n_layers: 4
+  d_state: 16
+  learning_rate: 0.0001
+  batch_size: 16
+  epochs: 150
+
+paths:
+  ae_checkpoints: "checkpoints/ae_weights/"
+  mamba_checkpoints: "checkpoints/mamba_weights/"
