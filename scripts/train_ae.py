@@ -9,19 +9,26 @@ def train():
     print("🚀 Starting Autoencoder Training...")
     
     # Load processed data
-    X_path = "data/processed/X_final.csv"
-    if not os.path.exists(X_path):
-        print(f"❌ Error: {X_path} not found. Run preprocess_data.py first.")
+    data_dir = "data/processed"
+    X_train_path = os.path.join(data_dir, "X_train.csv")
+    X_val_path = os.path.join(data_dir, "X_val.csv")
+    
+    if not os.path.exists(X_train_path):
+        print(f"❌ Error: {X_train_path} not found. Run preprocess_data.py first.")
         return
 
-    X = pd.read_csv(X_path, index_col=0)
-    input_dim = X.shape[1]
+    X_train = pd.read_csv(X_train_path, index_col=0)
+    X_val = pd.read_csv(X_val_path, index_col=0)
+    
+    input_dim = X_train.shape[1]
     latent_dim = 128
     
-    # Convert to tensor
-    X_tensor = torch.tensor(X.values, dtype=torch.float32)
-    dataset = TensorDataset(X_tensor)
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+    # Datasets
+    train_dataset = TensorDataset(torch.tensor(X_train.values, dtype=torch.float32))
+    val_dataset = TensorDataset(torch.tensor(X_val.values, dtype=torch.float32))
+    
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
     
     model = DenoisingAutoencoder(input_dim=input_dim, latent_dim=latent_dim)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -31,11 +38,10 @@ def train():
     noise_factor = 0.2
     
     for epoch in range(epochs):
+        model.train()
         train_loss = 0
-        for batch in dataloader:
+        for batch in train_loader:
             features = batch[0]
-            
-            # Add noise for Denoising AE
             noisy_features = features + noise_factor * torch.randn_like(features)
             
             optimizer.zero_grad()
@@ -45,8 +51,18 @@ def train():
             optimizer.step()
             train_loss += loss.item()
             
+        # Validation
+        model.eval()
+        val_loss = 0
+        with torch.no_grad():
+            for batch in val_loader:
+                features = batch[0]
+                _, decoded = model(features)
+                loss = criterion(decoded, features)
+                val_loss += loss.item()
+            
         if (epoch + 1) % 10 == 0:
-            print(f"Epoch [{epoch+1}/{epochs}], Loss: {train_loss/len(dataloader):.4f}")
+            print(f"Epoch [{epoch+1}/{epochs}], Train Loss: {train_loss/len(train_loader):.4f}, Val Loss: {val_loss/len(val_loader):.4f}")
     
     # Save weights
     os.makedirs("checkpoints/ae_weights", exist_ok=True)

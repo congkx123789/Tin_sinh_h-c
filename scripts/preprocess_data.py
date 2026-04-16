@@ -64,8 +64,41 @@ def preprocess_tcga_data():
     X = log_transform(X)
     X = normalize_data(X)
 
-    # 5. Save Processed Data
-    print(f"Final feature matrix shape: {X.shape}")
+    # 5. Stratified Train/Val/Test Split (70/15/15)
+    print("Splitting data into Stratified Train/Val/Test sets...")
+    from sklearn.model_selection import train_test_split
+    
+    # First split: Tách Test set (15%)
+    X_temp, X_test, y_temp, y_test = train_test_split(
+        X, y, 
+        test_size=0.15, 
+        stratify=y['OS'], 
+        random_state=42
+    )
+    
+    # Second split: Tách Train (70%) và Val (15%) từ phần còn lại (85%)
+    # val_size = 15 / 85 ≈ 0.176
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_temp, y_temp, 
+        test_size=0.1765, 
+        stratify=y_temp['OS'], 
+        random_state=42
+    )
+
+    # 6. Save Processed Data
+    print(f"Final training set shape: {X_train.shape}")
+    print(f"Final validation set shape: {X_val.shape}")
+    print(f"Final test set shape: {X_test.shape}")
+    
+    # Save all splits
+    X_train.to_csv(os.path.join(processed_dir, "X_train.csv"))
+    y_train.to_csv(os.path.join(processed_dir, "y_train.csv"))
+    X_val.to_csv(os.path.join(processed_dir, "X_val.csv"))
+    y_val.to_csv(os.path.join(processed_dir, "y_val.csv"))
+    X_test.to_csv(os.path.join(processed_dir, "X_test.csv"))
+    y_test.to_csv(os.path.join(processed_dir, "y_test.csv"))
+    
+    # Also keep X_final for backwards compatibility or full-set runs
     X.to_csv(os.path.join(processed_dir, "X_final.csv"))
     y.to_csv(os.path.join(processed_dir, "y_final.csv"))
     
