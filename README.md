@@ -18,7 +18,12 @@ This project implements a Mamba-based survival prediction model for Glioblastoma
    pip install -r requirements.txt
    ```
 
-2. Preprocess data:
+2. Download TCGA-GBM Data (from UCSC Xena):
+   ```bash
+   python scripts/setup_data.py
+   ```
+
+3. Preprocess data:
    ```bash
    python scripts/preprocess_data.py
    ```
@@ -37,3 +42,4 @@ This project implements a Mamba-based survival prediction model for Glioblastoma
    ```bash
    python scripts/evaluate.py
    ```
+# Tin_sinh_h-c
