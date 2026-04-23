@@ -9,14 +9,51 @@ Mục tiêu chính của dự án là giải quyết bài toán "Số lượng g
 2.  **Mô hình hóa chuỗi**: Sử dụng **Mamba** - một kiến trúc mới mạnh mẽ hơn cả Transformer đối với các chuỗi dài - để học các tương tác phức tạp giữa các cụm đặc trưng gen.
 3.  **Phân tầng rủi ro**: Cung cấp một chỉ số rủi ro (Risk Score) giúp bác sĩ tiên lượng được mức độ hung hãn của khối u, hỗ trợ quyết định phác đồ điều trị.
 
+## 🏗 Kiến trúc Hệ thống (System Architecture)
+
+Dự án sử dụng cơ chế **Hybrid Deep Learning** kết hợp giữa nén dữ liệu và mô hình hóa chuỗi:
+
+```mermaid
+graph TD
+    A[Mức độ biểu hiện Gen - 16,504 đặc trưng] --> B(Denoising Autoencoder)
+    B --> C{Latent Space - 128 chiều}
+    C --> D[Băm chuỗi thành 8 Token x 16-dim]
+    D --> E[Mamba S6 Block 1]
+    E --> F[Mamba S6 Block 2]
+    F --> G[Global Average Pooling]
+    G --> H[Survival Head - MLP]
+    H --> I[Kết quả: Risk Score / Log Hazard Ratio]
+```
+
 ## 🕒 Nhật ký Quy trình thực hiện (Step-by-Step)
 
-1.  **Bước 1: Thu thập Dữ liệu thô**: Tải RNA-Seq và Survival data từ TCGA-GBM. Xử lý lỗi file mapping bằng cách dùng **MyGene.info API**.
-2.  **Bước 2: Tiền xử lý Sinh tin học**: Thực hiện Log2 transform, Z-score normalization và lọc ra **16,504 gen** biến thiên cao nhất.
-3.  **Bước 3: Nén đặc trưng (DAE)**: Huấn luyện Autoencoder để nén dữ liệu xuống **128 chiều** tiềm ẩn.
-4.  **Bước 4: Kiến trúc Mamba-SSM**: Băm chuỗi 128-dim thành **8 token (16-dim)** để tận dụng sức mạnh Selective State Space của Mamba.
-5.  **Bước 5: Huấn luyện & Tổ chức**: Dùng Cox Loss, chia dữ liệu **Stratified Split** và tự động hóa việc phân chia vào các thư mục `train/val/test`.
-6.  **Bước 6: Kiểm chứng ngoại kiểm**: Đang thực hiện đánh giá độ tổng quát trên tập dữ liệu **TCGA-LGG**.
+1.  **Bước 1: Thu thập Dữ liệu thô**: Tải dữ liệu RNA-Seq (FPKM-UQ) và Survival từ tập dữ liệu TCGA-GBM. Xử lý lỗi mapping Ensembl bằng cách truy xuất tự động qua **MyGene.info API (v3)**.
+2.  **Bước 2: Tiền xử lý Sinh tin học**: 
+    - Thực hiện lọc các gen có variance cực thấp (nhiễu).
+    - Áp dụng `log2(x + 1)` để chuẩn hóa biên độ biểu hiện.
+    - Z-score normalization để đưa dữ liệu về cùng một phân phối, giúp mô hình hội tụ nhanh hơn.
+3.  **Bước 3: Nén đặc trưng (DAE)**: Sử dụng Denoising Autoencoder với Dropout 20% để học các đặc trưng ẩn (Latent features). Bước này cực kỳ quan trọng để giải quyết bài toán "lời nguyền chiều dữ liệu" (Curse of dimensionality).
+4.  **Bước 4: Mô hình hóa Mamba-SSM**: 
+    - Khối Mamba sử dụng cơ chế **Selective State Space (S6)** để lọc bỏ thông tin gen kém quan trọng và tập trung vào các pathway sinh học ảnh hưởng mạnh đến sinh tồn.
+    - Thiết lập chuỗi 8 token giúp mô hình nắm bắt được "cross-talk" giữa các thành phần gen.
+5.  **Bước 5: Huấn luyện & Tổ chức dữ liệu**: 
+    - Hàm Loss: **Cox Partial Likelihood** giúp mô hình học cách xếp hạng rủi ro bệnh nhân (Ranking) thay vì dự đoán ngày sống chính xác (Regression).
+    - Tự động chia dữ liệu **Stratified Split** vào hệ thống thư mục:
+        - `train/`: Dữ liệu huấn luyện chính.
+        - `val/`: Dữ liệu dùng để tinh chỉnh tham số.
+        - `test_internal/`: Dữ liệu kiểm tra nội bộ từ cùng nguồn TCGA-GBM.
+6.  **Bước 6: Kiểm chứng ngoại kiểm (External Validation)**: Hiện đang tải và xử lý bộ dữ liệu **TCGA-LGG** để kiểm tra tính tổng quát của mô hình trên các loại glioma khác.
+
+## ⚙️ Cấu hình thử nghiệm (Experimental Setup)
+
+| Tham số | Giá trị |
+| :--- | :--- |
+| Latent Dimension | 128 |
+| Mamba D-Model | 16 |
+| Sequence Length | 8 Tokens |
+| Batch Size | 16 |
+| Optimizer | Adam (LR=0.0001) |
+| Loss Function | Cox Partial Likelihood |
 
 ## 🏗 Cấu trúc mã nguồn (Code Structure)
 
