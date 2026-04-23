@@ -102,6 +102,28 @@ python scripts/train_mamba.py
 python scripts/evaluate.py
 ```
 
+## 🔍 Chi tiết Phương pháp Kiểm chứng Ngoại kiểm (External Validation)
+
+Để đảm bảo mô hình không chỉ "học vẹt" trên tập TCGA-GBM, chúng tôi thực hiện quy trình kiểm chứng nghiêm ngặt trên bộ dữ liệu **TCGA-LGG**:
+
+1.  **Tính tương đồng sinh học**: LGG và GBM đều là các khối u thần kinh đệm (glioma). Tuy nhiên, LGG có tiên lượng tốt hơn và thời gian sống dài hơn. Việc thử nghiệm giúp xác định mô hình có nhận diện được các đặc trưng gen cốt lõi của glioma hay không.
+2.  **Đồng bộ hóa đặc trưng (Feature Alignment)**: Dữ liệu LGG được lọc để khớp chính xác với **16,504 gen** của mô hình GBM. Các gen thiếu được bù giá trị trung bình để tránh làm lệch dự báo.
+3.  **Đánh giá độ tổng quát (Generalizability)**: Nếu chỉ số C-index trên LGG vẫn duy trì ở mức cao (>0.55), điều đó chứng tỏ mô hình đã học được các **Biomarkers** thực sự có ý nghĩa lâm sàng.
+
+## 💡 Tại sao chọn Mamba cho dữ liệu Gen?
+
+Dữ liệu biểu hiện gen có đặc thù là **chiều dữ liệu cực lớn** ($p \gg n$) nhưng mối quan hệ giữa các gen lại mang tính chất mạng lưới phức tạp.
+-   **Selective SSM (S6)**: Khác với Transformer (phụ thuộc vào Attention với chi phí $O(n^2)$), Mamba có hiệu năng tuyến tính $O(n)$ và khả năng nén thông tin vào trạng thái ẩn (hidden state) một cách chọn lọc. 
+-   **Pathways Attention**: Cơ chế nén của Mamba giúp mô hình tập trung vào các nhóm gen thuộc cùng một con đường tín hiệu (pathway) ảnh hưởng mạnh nhất đến khối u.
+
+## 🧮 Cơ sở toán học: Cox Partial Likelihood
+
+Mô hình không dự báo số ngày sống cụ thể (Regression) mà dự báo **Chỉ số rủi ro (Risk Score)** thông qua hàm mất mát:
+
+$$L(\beta) = \prod_{i:E_i=1} \frac{\exp(h(x_i, \beta))}{\sum_{j \in R(t_i)} \exp(h(x_j, \beta))}$$
+
+Trong đó $R(t_i)$ là tập hợp các bệnh nhân vẫn còn sống tại thời điểm $t_i$. Mục tiêu là tối đa hóa xác suất người có sự kiện (tử vong) thực sự có điểm rủi ro cao hơn những người khác.
+
 ## 📊 Kết quả đạt được
 
 Hệ thống hiện tại đạt được hiệu suất như sau trên tập dữ liệu Test độc lập:
