@@ -85,24 +85,28 @@ def preprocess_tcga_data():
         random_state=42
     )
 
-    # 6. Save Processed Data
+    # 6. Save Processed Data into subfolders
     print(f"Final training set shape: {X_train.shape}")
     print(f"Final validation set shape: {X_val.shape}")
     print(f"Final test set shape: {X_test.shape}")
     
-    # Save all splits
-    X_train.to_csv(os.path.join(processed_dir, "X_train.csv"))
-    y_train.to_csv(os.path.join(processed_dir, "y_train.csv"))
-    X_val.to_csv(os.path.join(processed_dir, "X_val.csv"))
-    y_val.to_csv(os.path.join(processed_dir, "y_val.csv"))
-    X_test.to_csv(os.path.join(processed_dir, "X_test.csv"))
-    y_test.to_csv(os.path.join(processed_dir, "y_test.csv"))
+    # Define subdirectories
+    train_dir = os.path.join(processed_dir, "train")
+    val_dir = os.path.join(processed_dir, "val")
+    test_dir = os.path.join(processed_dir, "test_internal")
     
-    # Also keep X_final for backwards compatibility or full-set runs
-    X.to_csv(os.path.join(processed_dir, "X_final.csv"))
-    y.to_csv(os.path.join(processed_dir, "y_final.csv"))
+    for d in [train_dir, val_dir, test_dir]:
+        os.makedirs(d, exist_ok=True)
     
-    print("✅ Preprocessing complete! Files saved to data/processed/")
+    # Save splits
+    X_train.to_csv(os.path.join(train_dir, "X.csv"))
+    y_train.to_csv(os.path.join(train_dir, "y.csv"))
+    X_val.to_csv(os.path.join(val_dir, "X.csv"))
+    y_val.to_csv(os.path.join(val_dir, "y.csv"))
+    X_test.to_csv(os.path.join(test_dir, "X.csv"))
+    y_test.to_csv(os.path.join(test_dir, "y.csv"))
+    
+    print("✅ Preprocessing complete! Files organized into data/processed/[train, val, test_internal]")
 
 if __name__ == "__main__":
     preprocess_tcga_data()

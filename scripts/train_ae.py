@@ -9,9 +9,9 @@ def train():
     print("🚀 Starting Autoencoder Training...")
     
     # Load processed data
-    data_dir = "data/processed"
-    X_train_path = os.path.join(data_dir, "X_train.csv")
-    X_val_path = os.path.join(data_dir, "X_val.csv")
+    processed_dir = "data/processed"
+    X_train_path = os.path.join(processed_dir, "train/X.csv")
+    X_val_path = os.path.join(processed_dir, "val/X.csv")
     
     if not os.path.exists(X_train_path):
         print(f"❌ Error: {X_train_path} not found. Run preprocess_data.py first.")

@@ -11,11 +11,11 @@ def train():
     print("🚀 Starting Survival Mamba Training...")
     
     # Load processed data
-    data_dir = "data/processed"
-    X_train_path = os.path.join(data_dir, "X_train.csv")
-    y_train_path = os.path.join(data_dir, "y_train.csv")
-    X_val_path = os.path.join(data_dir, "X_val.csv")
-    y_val_path = os.path.join(data_dir, "y_val.csv")
+    processed_dir = "data/processed"
+    X_train_path = os.path.join(processed_dir, "train/X.csv")
+    y_train_path = os.path.join(processed_dir, "train/y.csv")
+    X_val_path = os.path.join(processed_dir, "val/X.csv")
+    y_val_path = os.path.join(processed_dir, "val/y.csv")
     
     if not (os.path.exists(X_train_path) and os.path.exists(y_train_path)):
         print(f"❌ Error: Processed data not found. Run preprocess_data.py first.")

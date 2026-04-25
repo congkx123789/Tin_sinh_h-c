@@ -7,13 +7,13 @@ from models.autoencoder import DenoisingAutoencoder
 from models.survival_net import SurvivalMambaNet
 from utils.metrics import concordance_index, calculate_km_curve
 
-def evaluate():
-    print("🚀 Starting Evaluation...")
+def evaluate(data_split="test_internal"):
+    print(f"🚀 Starting Evaluation on {data_split}...")
     
-    # 1. Load Test Data
-    data_dir = "data/processed"
-    X_test_path = os.path.join(data_dir, "X_test.csv")
-    y_test_path = os.path.join(data_dir, "y_test.csv")
+    # 1. Load Data
+    data_dir = os.path.join("data/processed", data_split)
+    X_test_path = os.path.join(data_dir, "X.csv")
+    y_test_path = os.path.join(data_dir, "y.csv")
     
     if not os.path.exists(X_test_path):
         print("❌ Error: Test data not found. Run preprocess_data.py first.")
@@ -76,8 +76,11 @@ def evaluate():
     
     # Save Plot
     os.makedirs("results", exist_ok=True)
-    plt.savefig("results/km_plot.png")
-    print("✅ Evaluation complete. Kaplan-Meier plot saved to results/km_plot.png")
+    plot_path = f"results/km_plot_{data_split}.png"
+    plt.savefig(plot_path)
+    print(f"✅ Evaluation complete. Kaplan-Meier plot saved to {plot_path}")
 
 if __name__ == "__main__":
-    evaluate()
+    import sys
+    split = sys.argv[1] if len(sys.argv) > 1 else "test_internal"
+    evaluate(split)

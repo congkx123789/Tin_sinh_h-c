@@ -43,6 +43,9 @@ def fetch_gene_symbols(ensembl_ids):
             for item in results:
                 if 'symbol' in item:
                     mapping_dict[item['query']] = item['symbol']
+            
+            # Progress update
+            print(f"Mapped {min(i + chunk_size, len(base_ids))}/{len(base_ids)} genes...")
         except Exception as e:
             print(f"Error fetching symbols: {e}")
             

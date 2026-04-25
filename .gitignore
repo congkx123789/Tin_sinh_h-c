@@ -43,3 +43,7 @@ share/
 
 # Notebooks
 .ipynb_checkpoints/
+mamba_env/
+data/processed/
+data/raw/
+checkpoints/
