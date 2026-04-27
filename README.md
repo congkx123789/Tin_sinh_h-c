@@ -1,6 +1,28 @@
 # 🧬 GBM Survival Prediction using Mamba-SSM
 
-Mô hình học sâu sử dụng kiến trúc **Mamba (Selective State Space Model)** để dự đoán tiên lượng sống sót của bệnh nhân u u não (GBM) từ dữ liệu biểu hiện gen (16,504 gen).
+Mô hình học sâu sử dụng kiến trúc **Mamba (Selective State Space Model)** để dự đoán tiên lượng sống sót của bệnh nhân u não (GBM) từ dữ liệu biểu hiện gen (16,504 gen).
+
+## 🚀 Hướng dẫn bắt đầu nhanh (Quick Start)
+
+### 1. Cài đặt môi trường
+```bash
+conda create -n mamba_env python=3.10
+conda activate mamba_env
+pip install -r requirements.txt
+```
+
+### 2. Khôi phục dữ liệu (Bắt buộc nếu tải từ GitHub)
+Do giới hạn 100MB của GitHub, dữ liệu lớn được chia nhỏ. Chạy script sau để khôi phục:
+```bash
+bash scripts/reconstruct_data.sh
+```
+
+### 3. Đánh giá mô hình
+Sử dụng mô hình đã huấn luyện để kiểm chứng trên các tập dữ liệu:
+```bash
+python scripts/evaluate.py [split_name]
+# Ví dụ: python scripts/evaluate.py test_cgga_325
+```
 
 ## 🎯 Kết quả Kiểm chứng (C-index)
 
@@ -14,31 +36,19 @@ Mô hình học sâu sử dụng kiến trúc **Mamba (Selective State Space Mod
 | **GSE13041** | Microarray | 191 | **0.5478** |
 | **REMBRANDT** | Microarray | 490 | **0.4582** |
 
-## 📂 Cấu trúc Dữ liệu
+## 📂 Cấu trúc Dự án
 ```text
 data/
-├── 01_raw/          # Dữ liệu gốc (TCGA, CGGA, GEO)
-├── 02_processed/    # Dữ liệu sạch (Training & Validation)
-└── 03_metadata/     # Bảng ánh xạ Gen & ID
-```
-
-## 🚀 Cách chạy nhanh
-1. **Huấn luyện**: `python scripts/train_ae.py` & `python scripts/train_mamba.py`
-2. **Đánh giá**: `python scripts/evaluate.py [split_name]`
-
-## 📦 Cách khôi phục dữ liệu lớn (Reconstructing Large Files)
-Do giới hạn 100MB của GitHub, các tệp >100MB đã được chia nhỏ (`.part-aa`, `.part-ab`). Để khôi phục, hãy chạy:
-```bash
-cat data/01_raw/GEO/REMBRANDT_matrix.gz.part-* > data/01_raw/GEO/REMBRANDT_matrix.gz
-cat data/01_raw/TCGA/lgg_rna_seq.tsv.gz.part-* > data/01_raw/TCGA/lgg_rna_seq.tsv.gz
-cat data/02_processed/validation/CGGA_693/X.csv.part-* > data/02_processed/validation/CGGA_693/X.csv
-# Tương tự cho các file .part khác
+├── 01_raw/          # Dữ liệu gốc quốc tế
+├── 02_processed/    # Dữ liệu sạch cho Training/Validation
+└── 03_metadata/     # Bảng ánh xạ gen
+scripts/             # Pipeline xử lý & Đánh giá
+models/              # Kiến trúc Mamba & Autoencoder
+results/             # Biểu đồ Kaplan-Meier
 ```
 
 ## 🌐 Nguồn dữ liệu (Data Sources)
-1. **TCGA**: [GDC Portal](https://portal.gdc.cancer.gov/)
-2. **CGGA**: [CGGA Website](http://www.cgga.org.cn/)
-3. **GEO**: [GSE108476](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108476), [GSE4271](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4271), [GSE7696](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7696), [GSE13041](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE13041), [GSE4412](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4412)
+Chi tiết xem tại [data/DATA_MAP.md](./data/DATA_MAP.md).
 
 ---
 **Project phát triển bởi AI Agent & Chuyên gia.**
