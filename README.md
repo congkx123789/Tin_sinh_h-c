@@ -41,5 +41,12 @@ data/
 - Tự động nhận diện Log-scale trong tiền xử lý.
 - Quy hoạch dữ liệu phân cấp đạt chuẩn nghiên cứu.
 
+## 🌐 Nguồn dữ liệu (Data Sources)
+1. **TCGA (The Cancer Genome Atlas)**: Dữ liệu GBM/LGG từ GDC Data Portal.
+2. **CGGA (Chinese Glioma Genome Atlas)**: Nhóm bệnh nhân Trung Quốc (batches 325 & 693).
+3. **GEO (NCBI Gene Expression Omnibus)**:
+   - **GSE108476** (REMBRANDT Project)
+   - **GSE4271**, **GSE7696**, **GSE13041**, **GSE4412**.
+
 ---
 **Project phát triển bởi AI Agent & Chuyên gia.**
