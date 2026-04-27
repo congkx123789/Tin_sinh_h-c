@@ -22,15 +22,7 @@ wheels/
 
 # Data (Excluding files > 100MB for GitHub limits)
 !data/
-data/01_raw/GEO/REMBRANDT_matrix.gz
-data/01_raw/TCGA/lgg_rna_seq_test.tsv.gz
-data/01_raw/TCGA/lgg_rna_seq.tsv.gz
-data/02_processed/validation/CGGA_693/X.csv
-data/02_processed/validation/REMBRANDT/X.csv
-data/02_processed/validation/TCGA_LGG/X.csv
 
-checkpoints/
-results/
 *.pth
 *.pt
 
@@ -44,3 +36,9 @@ env/
 .vscode/
 .idea/
 .DS_Store
+data/01_raw/GEO/REMBRANDT_matrix.gz
+data/01_raw/TCGA/lgg_rna_seq.tsv.gz
+data/01_raw/TCGA/lgg_rna_seq_test.tsv.gz
+data/02_processed/validation/CGGA_693/X.csv
+data/02_processed/validation/REMBRANDT/X.csv
+data/02_processed/validation/TCGA_LGG/X.csv
