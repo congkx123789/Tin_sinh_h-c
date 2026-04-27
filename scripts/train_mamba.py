@@ -11,7 +11,7 @@ def train():
     print("🚀 Starting Survival Mamba Training...")
     
     # Load processed data
-    processed_dir = "data/processed"
+    processed_dir = "data/02_processed/training"
     X_train_path = os.path.join(processed_dir, "train/X.csv")
     y_train_path = os.path.join(processed_dir, "train/y.csv")
     X_val_path = os.path.join(processed_dir, "val/X.csv")

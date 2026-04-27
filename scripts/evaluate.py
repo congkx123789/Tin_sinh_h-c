@@ -10,8 +10,22 @@ from utils.metrics import concordance_index, calculate_km_curve
 def evaluate(data_split="test_internal"):
     print(f"🚀 Starting Evaluation on {data_split}...")
     
-    # 1. Load Data
-    data_dir = os.path.join("data/processed", data_split)
+    # Mapping for new structure
+    path_mapping = {
+        "test_internal": "training/test_internal",
+        "test_lgg": "validation/TCGA_LGG",
+        "test_cgga": "validation/CGGA_693",
+        "test_cgga_325": "validation/CGGA_325",
+        "test_rembrandt": "validation/REMBRANDT",
+        "test_gse4271": "validation/GSE4271",
+        "test_gse7696": "validation/GSE7696",
+        "test_gse13041": "validation/GSE13041",
+        "test_gse4412": "validation/GSE4412"
+    }
+    
+    target_path = path_mapping.get(data_split, f"validation/{data_split}")
+    data_dir = os.path.join("data/02_processed", target_path)
+    
     X_test_path = os.path.join(data_dir, "X.csv")
     y_test_path = os.path.join(data_dir, "y.csv")
     

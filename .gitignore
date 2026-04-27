@@ -20,30 +20,20 @@ wheels/
 .installed.cfg
 *.egg
 
-# Data & Models (Crucial for deep learning)
+# Data & Models
 data/
-!data/README.md
 checkpoints/
-models/*.pth
-models/*.pt
-models/*.h5
+results/
+*.pth
+*.pt
 
 # Virtual Environment
+mamba_env/
 venv/
 .venv/
 env/
-bin/
-lib/
-share/
 
 # IDE & OS
 .vscode/
 .idea/
 .DS_Store
-
-# Notebooks
-.ipynb_checkpoints/
-mamba_env/
-data/processed/
-data/raw/
-checkpoints/

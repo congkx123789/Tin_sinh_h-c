@@ -6,14 +6,15 @@ from utils.preprocessing import filter_genes, log_transform, normalize_data, map
 def preprocess_tcga_data():
     print("🚀 Starting data preprocessing for TCGA-GBM...")
     
-    raw_dir = "data/raw"
-    processed_dir = "data/processed"
+    raw_dir = "data/01_raw/TCGA"
+    processed_dir = "data/02_processed/training"
+    metadata_dir = "data/03_metadata"
     os.makedirs(processed_dir, exist_ok=True)
 
     # 1. Load RNA-Seq and Mapping Data
     print("Loading RNA-Seq and Gene Mapping data...")
     rna_path = os.path.join(raw_dir, "gbm_rna_seq.tsv.gz")
-    mapping_path = os.path.join(raw_dir, "gencode_probemap.tsv")
+    mapping_path = os.path.join(metadata_dir, "gencode_probemap.tsv")
     
     rna_df = pd.read_csv(rna_path, sep='\t', index_col=0)
     
@@ -106,7 +107,7 @@ def preprocess_tcga_data():
     X_test.to_csv(os.path.join(test_dir, "X.csv"))
     y_test.to_csv(os.path.join(test_dir, "y.csv"))
     
-    print("✅ Preprocessing complete! Files organized into data/processed/[train, val, test_internal]")
+    print("✅ Preprocessing complete! Files organized into data/02_processed/training/[train, val, test_internal]")
 
 if __name__ == "__main__":
     preprocess_tcga_data()
