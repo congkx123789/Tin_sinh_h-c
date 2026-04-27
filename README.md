@@ -42,11 +42,14 @@ data/
 - Quy hoạch dữ liệu phân cấp đạt chuẩn nghiên cứu.
 
 ## 🌐 Nguồn dữ liệu (Data Sources)
-1. **TCGA (The Cancer Genome Atlas)**: Dữ liệu GBM/LGG từ GDC Data Portal.
-2. **CGGA (Chinese Glioma Genome Atlas)**: Nhóm bệnh nhân Trung Quốc (batches 325 & 693).
+1. **TCGA (The Cancer Genome Atlas)**: [GDC Portal](https://portal.gdc.cancer.gov/)
+2. **CGGA (Chinese Glioma Genome Atlas)**: [CGGA Website](http://www.cgga.org.cn/)
 3. **GEO (NCBI Gene Expression Omnibus)**:
-   - **GSE108476** (REMBRANDT Project)
-   - **GSE4271**, **GSE7696**, **GSE13041**, **GSE4412**.
+   - [GSE108476](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108476) (REMBRANDT Project)
+   - [GSE4271](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4271) (Phillips et al.)
+   - [GSE7696](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7696) (Sun et al.)
+   - [GSE13041](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE13041) (Lee et al.)
+   - [GSE4412](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4412) (Freije et al.)
 
 ---
 **Project phát triển bởi AI Agent & Chuyên gia.**
