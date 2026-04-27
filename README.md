@@ -60,5 +60,3 @@ data/
 ```
 *Chi tiết các file đã split xem tại [data/DATA_MAP.md](./data/DATA_MAP.md).*
 
----
-**Dự án được phát triển bởi AI Agent với sự cố vấn chuyên môn nghiên cứu.**
