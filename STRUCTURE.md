@@ -1,61 +1,71 @@
-# 📂 Cấu trúc Thư mục & Chi tiết Tệp tin (Project Structure)
+# 🗺️ Bản đồ Chi tiết Dự án (Deep-Dive Project Structure)
 
-Tài liệu này mô tả chi tiết sơ đồ tổ chức của dự án **GBM Survival Mamba** và chức năng của từng tệp tin mã nguồn.
+Chào mừng bạn đến với hướng dẫn chi tiết về cấu trúc của dự án **GBM Survival Mamba**. Tài liệu này không chỉ liệt kê tệp tin mà còn giải thích **Logic** và **Thứ tự thực hiện** của toàn bộ hệ thống.
 
 ---
 
-## 🏗️ Sơ đồ Tổng quan
+## 🧭 1. Sơ đồ Cấu trúc Tổng thể
 ```text
 gbm_survival_mamba/
-├── checkpoints/          # Lưu trữ trọng số mô hình đã huấn luyện
-├── data/                 # Cấu trúc thư mục dữ liệu (Trống trên GitHub)
-├── models/               # Định nghĩa các kiến trúc mạng nơ-ron
-├── results/              # Kết quả đầu ra (Biểu đồ, báo cáo)
-├── scripts/              # Các kịch bản thực thi (Tiền xử lý, Training, Eval)
-├── utils/                # Các hàm tiện ích bổ trợ
-├── requirements.txt      # Danh sách thư viện cần thiết
-└── README.md             # Tài liệu hướng dẫn chính
+├── 📂 models/           # "BỘ NÃO": Nơi định nghĩa các thuật toán AI
+├── 📂 scripts/          # "CÁNH TAY": Các lệnh thực thi từng bước
+├── 📂 utils/            # "CÔNG CỤ": Các hàm tính toán bổ trợ
+├── 📂 checkpoints/      # "KÝ ỨC": Lưu trữ các kết quả đã huấn luyện
+├── 📂 results/          # "THÀNH QUẢ": Biểu đồ và báo cáo trích xuất
+└── 📄 run.py            # "ĐIỀU PHỐI": File chạy chính của dự án
 ```
 
 ---
 
-## 📝 Chi tiết chức năng từng thư mục
+## 🛠️ 2. Chi tiết theo Giai đoạn Thực hiện (Workflow)
 
-### 1. `models/` (Kiến trúc mô hình)
-- **`autoencoder.py`**: Định nghĩa mạng **Denoising Autoencoder (DAE)** dùng để nén dữ liệu gen từ 16,383 chiều xuống 128 chiều.
-- **`mamba_block.py`**: Lớp bao quanh (wrapper) thư viện **Mamba-SSM**, cho phép mô hình học các tương quan chuỗi.
-- **`survival_net.py`**: Mô hình chính kết hợp Encoder và Mamba, bao gồm cả đầu ra dự đoán rủi ro (Survival) và đầu ra phân loại (Classification).
-- **`__init__.py`**: Khởi tạo package models.
+Tôi chia dự án thành 4 giai đoạn chính để bạn dễ theo dõi:
 
-### 2. `scripts/` (Kịch bản thực thi - Quan trọng nhất)
-- **`preprocess_data.py`**: Script tổng quát để làm sạch, lọc gen và chuẩn hóa dữ liệu RNA-seq.
-- **`train_ae.py`**: Huấn luyện bộ Autoencoder để học không gian latent.
-- **`train_mamba.py`**: Huấn luyện mô hình Mamba dự đoán sống sót (Survival training).
-- **`evaluate.py`**: Đánh giá mô hình trên các bộ dữ liệu test, tính toán C-index và vẽ đường cong Kaplan-Meier.
-- **`patient_gene_report.py`**: Trích xuất dữ liệu của một bệnh nhân cụ thể và tạo báo cáo rủi ro.
-- **`extract_global_biomarkers.py`**: Sử dụng Gradient để tìm ra các gen có ảnh hưởng lớn nhất đến tiên lượng toàn cầu.
-- **`visualize_classifier.py`**: Vẽ các biểu đồ ROC, Confusion Matrix và KM stratification.
-- **`visualize_biomarker_landscape.py`**: Tạo Dashboard heatmap cho các dấu ấn sinh học.
-- **`test_custom_patient.py`**: Cho phép người dùng đưa file gen của bệnh nhân mới vào để AI dự đoán rủi ro.
-- **`analyze_treatment.py`**: Phân tích sự khác biệt về biểu hiện gen giữa các nhóm điều trị.
-- **`sync_validation_data.py`**: Đồng bộ danh sách gen giữa các bộ dữ liệu khác nhau.
+### Giai đoạn A: Tiền xử lý Dữ liệu (Data Preparation)
+*Nhiệm vụ: Biến dữ liệu gen thô thành dạng mà AI có thể hiểu được.*
 
-### 3. `utils/` (Hàm bổ trợ)
-- **`loss.py`**: Triển khai hàm mất mát **Cox Partial Likelihood** tùy chỉnh cho bài toán sống sót.
-- **`metrics.py`**: Chứa các hàm tính toán chỉ số **C-index** và các hàm thống kê sống sót.
-- **`preprocessing.py`**: Các hàm phụ trợ cho việc lọc và chuẩn hóa dữ liệu.
+| Tệp tin | Chức năng chi tiết | Khi nào dùng? |
+| :--- | :--- | :--- |
+| **`scripts/preprocess_data.py`** | Lọc bỏ các gen không quan trọng, thực hiện Log-transform để chuẩn hóa dữ liệu. | **Bước 1**: Chạy đầu tiên khi có dữ liệu mới. |
+| **`scripts/sync_validation_data.py`** | Đảm bảo các bộ dữ liệu khác (CGGA, GEO) có cùng danh sách gen với bộ huấn luyện (TCGA). | Chạy sau khi đã có dữ liệu huấn luyện chuẩn. |
+| **`utils/preprocessing.py`** | Chứa các công thức toán học để làm sạch dữ liệu. | Được gọi tự động bởi các script trên. |
 
-### 4. `checkpoints/` (Trọng số mô hình)
-- **`ae_weights/best_ae.pth`**: Trọng số tốt nhất của bộ Autoencoder.
-- **`mamba_weights/best_mamba.pth`**: Trọng số mô hình Survival Mamba đã huấn luyện xong.
-- **`mamba_weights/best_classifier.pth`**: Trọng số mô hình tối ưu cho bài toán phân loại.
+### Giai đoạn B: Huấn luyện AI (Model Training)
+*Nhiệm vụ: Dạy cho AI cách nén gen và dự đoán rủi ro sống sót.*
 
-### 5. `results/` (Kết quả)
-- Thư mục này chứa toàn bộ các file `.png` (biểu đồ) và `.csv` (bảng kết quả biomarker) được sinh ra sau khi chạy các script trong thư mục `scripts/`.
+| Tệp tin | Chức năng chi tiết | Logic bên trong |
+| :--- | :--- | :--- |
+| **`models/autoencoder.py`** | Định nghĩa kiến trúc nén gen. | Nén 16k gen xuống 128 đặc trưng cốt lõi. |
+| **`scripts/train_ae.py`** | Thực hiện việc dạy bộ nén gen. | Lưu kết quả vào `checkpoints/ae_weights/`. |
+| **`models/mamba_block.py`** | Định nghĩa lớp Mamba (State Space Model). | Học mối quan hệ chuỗi giữa các nhóm gen. |
+| **`models/survival_net.py`** | Kết hợp nén gen và Mamba để dự đoán. | Là file chứa "linh hồn" của kiến trúc Hybrid. |
+| **`scripts/train_mamba.py`** | Thực hiện dạy AI dự đoán sống sót. | Sử dụng hàm mất mát Cox trong `utils/loss.py`. |
+
+### Giai đoạn C: Đánh giá & Kiểm chứng (Evaluation)
+*Nhiệm vụ: Kiểm tra xem AI dự đoán chính xác đến đâu.*
+
+| Tệp tin | Chức năng chi tiết | Kết quả trả về |
+| :--- | :--- | :--- |
+| **`scripts/evaluate.py`** | Tính toán chỉ số C-index trên các bộ dữ liệu. | Trả về con số độ chính xác (ví dụ: 0.65). |
+| **`utils/metrics.py`** | Công thức tính C-index và Kaplan-Meier. | Được gọi bởi script đánh giá. |
+| **`scripts/visualize_classifier.py`** | Vẽ biểu đồ ROC, ma trận nhầm lẫn. | Lưu ảnh vào `results/classification/`. |
+
+### Giai đoạn D: Ứng dụng & Báo cáo (Application)
+*Nhiệm vụ: Sử dụng AI để giúp bác sĩ/nhà khoa học đưa ra quyết định.*
+
+| Tệp tin | Chức năng chi tiết | Ứng dụng thực tế |
+| :--- | :--- | :--- |
+| **`scripts/test_custom_patient.py`** | Nhập 1 mẫu bệnh nhân mới và xem AI dự đoán. | Dùng cho bác sĩ khi có bệnh nhân mới. |
+| **`scripts/patient_gene_report.py`** | Xuất file ảnh báo cáo chi tiết cho bệnh nhân. | Dùng để in ra kẹp vào hồ sơ bệnh án. |
+| **`scripts/extract_global_biomarkers.py`** | Tìm ra 20 gen "nguy hiểm" nhất. | Giúp nhà khoa học tìm mục tiêu thuốc mới. |
+| **`scripts/visualize_biomarker_landscape.py`**| Vẽ bản đồ gen tổng thể của dự án. | Dùng cho báo cáo khoa học hoặc thuyết trình. |
 
 ---
 
-## ⚙️ Các tệp tin gốc
-- **`run.py`**: Điểm bắt đầu của dự án (Entry point), thường dùng để điều phối các tác vụ chính.
-- **`requirements.txt`**: Danh sách tất cả các thư viện Python và phiên bản tương ứng để tái lập môi trường.
-- **`.gitignore`**: Quy định các file/thư mục không được đẩy lên GitHub (như thư viện nặng, dữ liệu cá nhân, keys).
+## 💾 3. Các file hệ thống khác
+- **`requirements.txt`**: "Danh sách mua sắm" - chứa các thư viện bạn cần cài để máy chạy được code.
+- **`.gitignore`**: "Tấm khiên" - ngăn không cho các file rác hoặc dữ liệu riêng tư bị đẩy lên mạng.
+- **`checkpoints/*.pth`**: "Bộ nhớ" - Đây là các file nặng nhất, chứa toàn bộ kiến thức AI đã học được. Không có nó, code chỉ là cái vỏ không hồn.
+
+---
+**Ghi chú**: Mọi biểu đồ bạn thấy trong dự án đều nằm trong thư mục `results/`. Nếu bạn chạy lại code, các file trong này sẽ được cập nhật mới.
