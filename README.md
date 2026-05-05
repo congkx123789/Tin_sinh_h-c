@@ -1,62 +1,65 @@
 # 🧬 GBM Survival Prediction using Mamba-SSM
 
-Mô hình học sâu tiên tiến sử dụng kiến trúc **Mamba (Selective State Space Model)** để dự đoán tiên lượng sống sót của bệnh nhân u não (Glioblastoma) dựa trên dữ liệu biểu hiện gen (16,504 gen).
+Mô hình học sâu tiên tiến sử dụng kiến trúc **Mamba (Selective State Space Model)** kết hợp với **Denoising Autoencoder (DAE)** để dự đoán tiên lượng sống sót của bệnh nhân u não (Glioblastoma) dựa trên dữ liệu biểu hiện gen.
 
-## 🚀 Hướng dẫn bắt đầu nhanh (Quick Start)
+## 🚀 Hướng dẫn bắt đầu (Quick Start)
 
 ### 1. Cài đặt môi trường
+Dự án yêu cầu Python 3.10+ và các thư viện trong `requirements.txt`.
 ```bash
 conda create -n mamba_env python=3.10
 conda activate mamba_env
 pip install -r requirements.txt
+# Lưu ý: Cần cài đặt mamba-ssm từ https://github.com/state-spaces/mamba
 ```
 
-### 2. Khôi phục dữ liệu (Bắt buộc nếu tải từ GitHub)
-Dữ liệu lớn (>100MB) đã được chia nhỏ để phù hợp với GitHub. Chạy script sau để khôi phục tệp gốc:
-```bash
-bash scripts/reconstruct_data.sh
-```
+### 2. Cấu trúc dữ liệu
+Thư mục `data/` hiện tại được để trống trên GitHub để giữ repository nhẹ. Bạn cần chuẩn bị dữ liệu theo cấu trúc sau:
+- `data/01_raw/`: Chứa các file TSV/CSV gốc từ TCGA, CGGA, GEO.
+- `data/02_processed/`: Chứa dữ liệu đã qua tiền xử lý (X.csv, y.csv).
 
-### 3. Đánh giá mô hình (Validation)
-Sử dụng các trọng số đã huấn luyện (trong `checkpoints/`) để kiểm chứng trên từng bộ dữ liệu:
+*Xem chi tiết tại [data/DATA_MAP.md](./data/DATA_MAP.md).*
+
+### 3. Sử dụng mô hình đã huấn luyện
+Sử dụng các trọng số trong `checkpoints/` để dự đoán hoặc đánh giá:
 ```bash
+# Đánh giá trên tập dữ liệu cụ thể
 python scripts/evaluate.py [split_name]
-# Ví dụ: python scripts/evaluate.py test_cgga_325
+
+# Dự đoán cho một bệnh nhân cụ thể (custom data)
+python scripts/test_custom_patient.py --input path/to/patient_data.csv
 ```
+
+## 📊 Các công cụ phân tích (Scripts)
+
+Dự án cung cấp bộ công cụ mạnh mẽ để phân tích và báo cáo:
+
+- **Dự đoán & Báo cáo**:
+    - `patient_gene_report.py`: Tạo báo cáo chi tiết về biểu hiện gen và mức độ nguy cơ cho từng bệnh nhân.
+    - `predict_condition.py`: Dự đoán tình trạng bệnh dựa trên biểu hiện gen.
+- **Trực quan hóa**:
+    - `visualize_classifier.py`: Vẽ biểu đồ phân loại và ma trận nhầm lẫn.
+    - `visualize_biomarker_landscape.py`: Trực quan hóa bản đồ các dấu ấn sinh học (biomarkers).
+- **Phân tích Dấu ấn sinh học**:
+    - `extract_global_biomarkers.py`: Tìm ra các gen có ảnh hưởng lớn nhất đến tiên lượng sống sót.
+    - `analyze_treatment.py`: Phân tích mối liên hệ giữa điều trị và biểu hiện gen.
 
 ## 🎯 Kết quả Thực nghiệm (C-index)
 
-Chúng tôi đã thực hiện quy trình kiểm chứng ngoại kiểm đa trung tâm (Multi-center Validation) với kết quả rất ổn định:
+Mô hình đạt kết quả ổn định trên nhiều quần thể kiểm chứng độc lập:
 
 | Nguồn dữ liệu | Số mẫu | Nền tảng | C-index |
 | :--- | :--- | :--- | :--- |
 | **TCGA-GBM** (Internal) | 150+ | RNA-Seq | **0.6151** |
-| **TCGA-LGG** (External) | 500+ | RNA-Seq | **0.6569** 🚀 |
+| **TCGA-LGG** (External) | 500+ | RNA-Seq | **0.6569** |
 | **CGGA-325** | 325 | RNA-Seq | **0.6325** |
 | **CGGA-693** | 693 | RNA-Seq | **0.5793** |
-| **GSE4412** | 85 | Microarray | **0.5801** |
-| **GSE13041** | 191 | Microarray | **0.5478** |
-| **REMBRANDT** | 490 | Microarray | **0.4582** |
 
-## 🌐 Nguồn dữ liệu gốc (Detailed Data Sources)
-
-Toàn bộ dữ liệu được thu thập từ các cổng thông tin Sinh tin học chính thống quốc tế:
-
-1.  **TCGA (The Cancer Genome Atlas)**: [GDC Cancer Portal](https://portal.gdc.cancer.gov/) - Dữ liệu GBM và LGG từ Hoa Kỳ.
-2.  **CGGA (Chinese Glioma Genome Atlas)**: [CGGA Website](http://www.cgga.org.cn/) - Dữ liệu bệnh nhân khu vực Châu Á.
-3.  **NCBI GEO (Gene Expression Omnibus)**:
-    - [GSE108476 (REMBRANDT)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108476)
-    - [GSE4271 (Phillips et al.)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4271)
-    - [GSE7696 (Sun et al.)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7696)
-    - [GSE13041 (Lee et al.)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE13041)
-    - [GSE4412 (Freije et al.)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4412)
-
-## 📂 Sơ đồ tổ chức thư mục (Data Architecture)
+## 📂 Sơ đồ tổ chức (Architecture)
 ```text
-data/
-├── 01_raw/          # Dữ liệu gốc (TCGA, CGGA, GEO)
-├── 02_processed/    # Dữ liệu sạch (Training & Validation)
-└── 03_metadata/     # Bảng ánh xạ Gen & ID probe
+├── checkpoints/      # Trọng số mô hình (DAE & Mamba)
+├── models/           # Định nghĩa kiến trúc (Mamba, Autoencoder, SurvivalNet)
+├── scripts/          # Scripts huấn luyện, tiền xử lý và phân tích
+├── utils/            # Các hàm bổ trợ xử lý dữ liệu
+└── results/          # Kết quả đầu ra (Biểu đồ, CSV báo cáo)
 ```
-*Chi tiết các file đã split xem tại [data/DATA_MAP.md](./data/DATA_MAP.md).*
-

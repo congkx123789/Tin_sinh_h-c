@@ -1,53 +1,36 @@
 # 🗺️ Bản đồ Cấu trúc Dữ liệu (Data Structure Map)
 
-Tài liệu này hướng dẫn chi tiết cách tổ chức dữ liệu trong dự án và cách khôi phục các tệp tin lớn đã bị chia nhỏ để vượt qua giới hạn 100MB của GitHub.
+Dự án này sử dụng dữ liệu biểu hiện gen từ nhiều nguồn quốc tế. Để đảm bảo tính nhẹ nhàng và tuân thủ các quy định về dữ liệu lớn, thư mục `data/` hiện không được lưu trữ trực tiếp trên GitHub.
 
-## 📂 Sơ đồ tổ chức thư mục (Directory Tree)
+## 📂 Sơ đồ tổ chức thư mục yêu cầu (Required Structure)
+
+Nếu bạn muốn chạy dự án này, hãy đảm bảo dữ liệu được đặt đúng vị trí sau:
 
 ```text
 data/
-├── 01_raw/                 # Dữ liệu gốc từ nguồn (Raw Data)
-│   ├── TCGA/               # Nguồn TCGA-GBM/LGG
-│   ├── CGGA/               # Nguồn Chinese Glioma Genome Atlas
-│   └── GEO/                # Nguồn NCBI Gene Expression Omnibus
-├── 02_processed/           # Dữ liệu đã làm sạch & Chuẩn hóa
-│   ├── training/           # Dữ liệu cho Train/Val/Test nội bộ
-│   └── validation/         # Các quần thể kiểm chứng độc lập
+├── 01_raw/                 # Dữ liệu gốc (Raw Data)
+│   ├── TCGA/               # File lgg_rna_seq.tsv.gz, v.v.
+│   ├── CGGA/               # Các file từ cgga.org.cn
+│   └── GEO/                # REMBRANDT_matrix.gz, v.v.
+├── 02_processed/           # Dữ liệu đã chuẩn hóa (X.csv, y.csv)
+│   ├── training/           # Dữ liệu cho Train/Val/Test
+│   └── validation/         # Thư mục cho CGGA_325, CGGA_693, REMBRANDT, TCGA_LGG...
 └── 03_metadata/            # Bảng ánh xạ gen và ID probe
 ```
 
-## 📦 Danh sách các tệp tin lớn đã chia nhỏ (Split Files)
+## 📋 Danh sách các bộ dữ liệu chính
 
-Dưới đây là bảng tra cứu để khôi phục các tệp tin gốc nếu bạn tải dự án từ GitHub:
+1.  **TCGA-GBM & TCGA-LGG**: Dữ liệu RNA-seq từ GDC Portal.
+2.  **CGGA (325 & 693 samples)**: Dữ liệu từ Chinese Glioma Genome Atlas.
+3.  **GEO Cohorts**: Bao gồm REMBRANDT, GSE4412, GSE13041, GSE4271, GSE7696.
 
-| Tên file gốc (Original) | Các phần trên GitHub (Parts) | Thư mục chứa |
-| :--- | :--- | :--- |
-| `REMBRANDT_matrix.gz` | `.part-aa`, `.part-ab` | `data/01_raw/GEO/` |
-| `lgg_rna_seq.tsv.gz` | `.part-aa`, `.part-ab` | `data/01_raw/TCGA/` |
-| `lgg_rna_seq_test.tsv.gz` | `.part-aa`, `.part-ab` | `data/01_raw/TCGA/` |
-| `X.csv` (CGGA-693) | `.part-aa` -> `.part-ac` | `data/02_processed/validation/CGGA_693/` |
-| `X.csv` (REMBRANDT) | `.part-aa`, `.part-ab` | `data/02_processed/validation/REMBRANDT/` |
-| `X.csv` (TCGA-LGG) | `.part-aa` -> `.part-ac` | `data/02_processed/validation/TCGA_LGG/` |
+## ⚙️ Quy trình xử lý dữ liệu
 
-## 🛠️ Hướng dẫn khôi phục dữ liệu (Reconstruction)
+Mã nguồn trong thư mục `scripts/` cung cấp đầy đủ các bước để tái lập dữ liệu:
 
-Để khôi phục toàn bộ dữ liệu về trạng thái ban đầu sau khi `git clone`, hãy chạy lệnh sau tại thư mục gốc của dự án:
-
-```bash
-# 1. Khôi phục dữ liệu thô GEO
-cat data/01_raw/GEO/REMBRANDT_matrix.gz.part-* > data/01_raw/GEO/REMBRANDT_matrix.gz
-
-# 2. Khôi phục dữ liệu thô TCGA
-cat data/01_raw/TCGA/lgg_rna_seq.tsv.gz.part-* > data/01_raw/TCGA/lgg_rna_seq.tsv.gz
-cat data/01_raw/TCGA/lgg_rna_seq_test.tsv.gz.part-* > data/01_raw/TCGA/lgg_rna_seq_test.tsv.gz
-
-# 3. Khôi phục dữ liệu đã xử lý (X.csv)
-cat data/02_processed/validation/CGGA_693/X.csv.part-* > data/02_processed/validation/CGGA_693/X.csv
-cat data/02_processed/validation/REMBRANDT/X.csv.part-* > data/02_processed/validation/REMBRANDT/X.csv
-cat data/02_processed/validation/TCGA_LGG/X.csv.part-* > data/02_processed/validation/TCGA_LGG/X.csv
-
-# Lưu ý: Sau khi khôi phục, bạn có thể xóa các file .part-* để tiết kiệm dung lượng.
-```
+1.  **Tiền xử lý**: Sử dụng `preprocess_data.py` để lọc gen và chuẩn hóa log-transform.
+2.  **Đồng bộ**: `sync_validation_data.py` giúp đảm bảo các bộ dữ liệu kiểm chứng có cùng danh sách gen với bộ huấn luyện.
+3.  **Tạo báo cáo**: `patient_gene_report.py` có thể được sử dụng để kiểm tra dữ liệu của từng mẫu bệnh nhân cụ thể.
 
 ---
-**Tài liệu này giúp đảm bảo tính toàn vẹn của dữ liệu trong quá trình validation.**
+**Lưu ý**: Các file trọng số mô hình trong `checkpoints/` đã được huấn luyện trên 16,504 gen phổ biến nhất trong u não. Dữ liệu đầu vào mới cần được ánh xạ đúng danh sách gen này để mô hình hoạt động chính xác.
