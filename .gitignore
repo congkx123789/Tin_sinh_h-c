@@ -1,44 +1,36 @@
+# Data
+data/01_raw/
+data/02_processed/**/*.csv
+data/02_processed/**/*.gz
+!data/02_processed/**/gbm_features.txt
+
+# Models & Checkpoints
+checkpoints/
+*.pth
+*.pkl
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.flakes/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Data (Excluding files > 100MB for GitHub limits)
-!data/
-
-*.pth
-*.pt
-
-# Virtual Environment
-mamba_env/
 venv/
 .venv/
-env/
+mamba_env/
+.env
 
-# IDE & OS
+# Results
+results/**/*.png
+results/**/*.csv
+
+# Security & Keys (MANDATORY EXCLUDE)
+*.key
+*.pem
+*.token
+*.env*
+.secrets/
+credentials.json
+
+# IDE
 .vscode/
 .idea/
-.DS_Store
-data/01_raw/GEO/REMBRANDT_matrix.gz
-data/01_raw/TCGA/lgg_rna_seq.tsv.gz
-data/01_raw/TCGA/lgg_rna_seq_test.tsv.gz
-data/02_processed/validation/CGGA_693/X.csv
-data/02_processed/validation/REMBRANDT/X.csv
-data/02_processed/validation/TCGA_LGG/X.csv
+.cursor/

@@ -22,8 +22,16 @@ class SurvivalMambaNet(nn.Module):
             nn.ReLU(),
             nn.Linear(64, 1) # Output log-hazard ratio
         )
+        
+        self.classifier_head = nn.Sequential(
+            nn.Linear(self.token_dim, 64),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(64, 1),
+            nn.Sigmoid() # Output probability (0 to 1)
+        )
 
-    def forward(self, x):
+    def forward(self, x, mode='survival'):
         # Encode gene expressions
         latent = self.encoder(x) # (batch, 128)
         
@@ -37,5 +45,8 @@ class SurvivalMambaNet(nn.Module):
         # Global Average Pooling (Mean over tokens)
         x = x.mean(dim=1) # (batch, token_dim)
         
+        if mode == 'classification':
+            return self.classifier_head(x)
+            
         risk_score = self.survival_head(x)
         return risk_score

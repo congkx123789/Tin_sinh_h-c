@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
-from utils.preprocessing import filter_genes, log_transform, normalize_data, map_ensembl_to_symbol
+from utils.preprocessing import RNASeqCleaner, map_ensembl_to_symbol
 
 def preprocess_tcga_data():
     print("🚀 Starting data preprocessing for TCGA-GBM...")
@@ -46,6 +46,37 @@ def preprocess_tcga_data():
     survival_df = pd.read_csv(survival_path, sep='\t')
     # Required columns: 'sample', 'OS', 'OS.time'
     survival_df = survival_df[['sample', 'OS', 'OS.time']].dropna()
+    
+    # Load Clinical data for Treatment info
+    print("Loading Clinical data for Treatment info...")
+    clinical_path = os.path.join(raw_dir, "gbm_clinical.tsv.gz")
+    if os.path.exists(clinical_path):
+        clinical_df = pd.read_csv(clinical_path, sep='\t')
+        if 'submitter_id' in clinical_df.columns and 'treatment_type.treatments.diagnoses' in clinical_df.columns:
+            clin_subset = clinical_df[['submitter_id', 'treatment_type.treatments.diagnoses']].copy()
+            clin_subset.rename(columns={'treatment_type.treatments.diagnoses': 'Treatment'}, inplace=True)
+            clin_subset = clin_subset.drop_duplicates(subset=['submitter_id'])
+            
+            # Extract patient ID from sample (e.g., 'TCGA-15-1447-01A' -> 'TCGA-15-1447')
+            survival_df['submitter_id'] = survival_df['sample'].str[:12]
+            survival_df = pd.merge(survival_df, clin_subset, on='submitter_id', how='left')
+            survival_df.drop(columns=['submitter_id'], inplace=True)
+            
+            # Simplify Treatment column (if it contains 'Radiation', mark as Radiation, etc.)
+            def simplify_treatment(t):
+                if pd.isna(t):
+                    return 'Unknown'
+                t_str = str(t).lower()
+                if 'radiation' in t_str and 'pharmaceutical' in t_str:
+                    return 'Chemo+Radiation'
+                elif 'radiation' in t_str:
+                    return 'Radiation'
+                elif 'pharmaceutical' in t_str:
+                    return 'Chemotherapy'
+                else:
+                    return 'Other/None'
+            survival_df['Treatment'] = survival_df['Treatment'].apply(simplify_treatment)
+
     survival_df.set_index('sample', inplace=True)
     print(f"Original Survival data shape: {survival_df.shape}")
 
@@ -57,13 +88,18 @@ def preprocess_tcga_data():
     
     print(f"Matched Shared samples: {len(common_samples)}")
 
-    # 4. Filter Genes and Normalize
-    print("Filtering genes and normalizing...")
-    # Filter low variance genes
-    X = filter_genes(X, variance_threshold=0.1)
-    # Log-transform and normalize
-    X = log_transform(X)
-    X = normalize_data(X)
+    # 4. Filter Genes and Normalize with Advanced Pipeline
+    print("Applying Advanced RNA-Seq Cleaning Pipeline...")
+    cleaner = RNASeqCleaner(variance_threshold=0.1, expression_ratio=0.2)
+    X_clean, inlier_mask = cleaner.fit_transform(X)
+    
+    # Save cleaner state for validation sets
+    cleaner.save_state(os.path.join(processed_dir, "scaler.pkl"))
+    
+    # Filter out outlier patients from y
+    y_clean = y.iloc[inlier_mask]
+    
+    print(f"Final Matched Clean Samples: {X_clean.shape[0]}")
 
     # 5. Stratified Train/Val/Test Split (70/15/15)
     print("Splitting data into Stratified Train/Val/Test sets...")
@@ -71,9 +107,9 @@ def preprocess_tcga_data():
     
     # First split: Tách Test set (15%)
     X_temp, X_test, y_temp, y_test = train_test_split(
-        X, y, 
+        X_clean, y_clean, 
         test_size=0.15, 
-        stratify=y['OS'], 
+        stratify=y_clean['OS'], 
         random_state=42
     )
     
