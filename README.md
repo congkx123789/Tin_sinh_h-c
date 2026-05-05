@@ -24,6 +24,25 @@ graph LR
 
 ---
 
+## 🚀 Cài đặt & Đồng bộ Dữ liệu
+
+### 1. Cài đặt môi trường
+Dự án yêu cầu Python 3.10+ và các thư viện trong `requirements.txt`.
+```bash
+conda create -n mamba_env python=3.10
+conda activate mamba_env
+pip install -r requirements.txt
+```
+
+### 2. Đồng bộ Dữ liệu (Hugging Face)
+Do kích thước dữ liệu lớn, toàn bộ thư mục `data/` được lưu trữ trên Hugging Face Hub. Chạy script sau để tự động tải và đồng bộ dữ liệu:
+```bash
+python scripts/download_data_hf.py
+```
+Sau khi chạy, thư mục `data/` sẽ được tự động tạo và chứa đầy đủ các file cần thiết để huấn luyện và đánh giá.
+
+---
+
 ## 📊 Chỉ số Đánh giá & Diễn giải (Survival Metrics)
 
 Mô hình sử dụng các chỉ số tiêu chuẩn trong y sinh để đo lường độ chính xác của tiên lượng:

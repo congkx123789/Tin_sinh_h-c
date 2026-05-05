@@ -1,6 +1,13 @@
 # 🗺️ Bản đồ Cấu trúc Dữ liệu (Data Structure Map)
 
-Dự án này sử dụng dữ liệu biểu hiện gen từ nhiều nguồn quốc tế. Để đảm bảo tính nhẹ nhàng và tuân thủ các quy định về dữ liệu lớn, thư mục `data/` hiện không được lưu trữ trực tiếp trên GitHub.
+Dự án này sử dụng dữ liệu biểu hiện gen từ nhiều nguồn quốc tế. Để đảm bảo tính nhẹ nhàng và tuân thủ các quy định về dữ liệu lớn, thư mục `data/` được lưu trữ trên **Hugging Face Hub**.
+
+## 🔄 Đồng bộ Dữ liệu Tự động (Khuyên dùng)
+
+Cách nhanh nhất để chuẩn bị dữ liệu là sử dụng script đồng bộ:
+```bash
+python scripts/download_data_hf.py
+```
 
 ## 📂 Sơ đồ tổ chức thư mục yêu cầu (Required Structure)
 
