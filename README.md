@@ -24,26 +24,34 @@ graph LR
 
 ---
 
+## 📊 Chỉ số Đánh giá & Diễn giải (Survival Metrics)
+
+Mô hình sử dụng các chỉ số tiêu chuẩn trong y sinh để đo lường độ chính xác của tiên lượng:
+
+1.  **C-index (Concordance Index)**: 
+    - Đây là chỉ số chính dùng để đánh giá mô hình sống sót. 
+    - **Ý nghĩa**: Khả năng của AI trong việc xếp hạng đúng thứ tự bệnh nhân: bệnh nhân được dự đoán "nguy cơ cao" phải có thời gian sống thực tế ngắn hơn bệnh nhân "nguy cơ thấp".
+    - *Giá trị > 0.6 được coi là có ý nghĩa dự báo tốt trong dữ liệu gen phức tạp.*
+
+2.  **Risk Score (Chỉ số Nguy cơ)**: 
+    - Đầu ra trực tiếp của mô hình Mamba (Log-hazard ratio). 
+    - **Ứng dụng**: Giá trị này càng cao, nguy cơ diễn tiến bệnh càng nhanh. Được dùng để phân tầng bệnh nhân vào các nhóm chăm sóc đặc biệt.
+
+3.  **Xác suất Sống sót (Survival Probability)**: 
+    - Được ước tính thông qua đường cong Kaplan-Meier từ kết quả dự đoán rủi ro. 
+    - Giúp trả lời câu hỏi: *"Khả năng bệnh nhân này sống sót sau 12, 24 hoặc 36 tháng là bao nhiêu?"*
+
+4.  **Log-rank P-value**: 
+    - Kiểm chứng sự khác biệt sinh học giữa các nhóm. Các kết quả của mô hình đều đạt **p < 0.05**, khẳng định việc phân tầng rủi ro là có ý nghĩa thống kê thực sự.
+
+---
+
 ## 🖼️ Hình ảnh Kết quả (Demo Visualizations)
 
 ### 1. Phân tầng rủi ro (Survival Stratification)
 ![KM Plot LGG](./results/km_plot_test_lgg.png)
 ### 2. Hiệu suất Phân loại
 ![ROC Curve](./results/classification/roc_curve.png)
-### 3. Bản đồ Dấu ấn Sinh học
-![Biomarker Dashboard](./results/biomarkers/biomarker_landscape_dashboard.png)
-
----
-
-## 💻 Yêu cầu Hệ thống (System Requirements)
-
-*   **Phần cứng**: 
-    *   Khuyến nghị sử dụng **NVIDIA GPU** (min 8GB VRAM) vì thư viện `mamba-ssm` yêu cầu CUDA kernel để đạt hiệu suất tối ưu.
-    *   RAM: Tối thiểu 16GB để xử lý các ma trận biểu hiện gen lớn.
-*   **Phần mềm**:
-    *   Linux (Ubuntu 20.04/22.04 khuyến nghị).
-    *   CUDA Toolkit 11.8+.
-    *   Python 3.10.
 
 ---
 
@@ -76,7 +84,6 @@ Hệ thống kết hợp **Denoising Autoencoder (DAE)** để nén dữ liệu 
 | `extract_global_biomarkers.py` | Tìm kiếm các gen chủ chốt toàn cầu |
 | `visualize_classifier.py` | Vẽ biểu đồ ROC, KM và ma trận nhầm lẫn |
 | `visualize_biomarker_landscape.py` | Tạo Dashboard về dấu ấn sinh học |
-| `analyze_treatment.py` | Phân tích tác động của điều trị |
 
 ---
 
@@ -92,7 +99,6 @@ Hệ thống kết hợp **Denoising Autoencoder (DAE)** để nén dữ liệu 
 
 ## 📝 Trích dẫn (Citation)
 
-Nếu bạn sử dụng dự án này trong nghiên cứu của mình, vui lòng trích dẫn theo định dạng sau:
 ```text
 Cong, K. X. (2024). GBM Survival Mamba: A Hybrid Deep Learning Approach for Glioblastoma Prognosis. GitHub Repository.
 ```
