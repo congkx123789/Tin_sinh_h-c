@@ -12,7 +12,8 @@ data/
 *.zip
 
 # Results
-results/**/*.png
+# We allow images for README demonstration
+!results/**/*.png
 results/**/*.csv
 
 # Security & Keys (MANDATORY EXCLUDE)

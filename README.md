@@ -2,59 +2,60 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Dự án này triển khai một hệ thống AI tiên tiến nhằm dự đoán tiên lượng sống sót cho bệnh nhân Ung thư não (Glioblastoma Multiforme - GBM). Đây là sự kết hợp đột phá giữa **Denoising Autoencoder (DAE)** và **Mamba (Selective State Space Model)** để xử lý dữ liệu biểu hiện gen đa chiều.
-
----
-
-## 🌟 Tính năng Nổi bật (Key Features)
-
-*   **Dự đoán Tiên lượng Chính xác (Precision Prognosis)**: Tính toán chỉ số rủi ro (Risk Score) cá thể hóa với độ tin cậy cao trên nhiều quần thể kiểm chứng.
-*   **Giải thích mô hình (Explainable AI - XAI)**: Trích xuất các "Dấu ấn sinh học" (Biomarkers) có ảnh hưởng lớn nhất đến kết quả sống sót thông qua cơ chế tính toán Gradient.
-*   **Khả năng tương thích đa nền tảng**: Xử lý mượt mà cả dữ liệu **RNA-Seq** và **Microarray** nhờ quy trình tiền xử lý đồng bộ 16,383 gen.
-*   **Hệ thống Báo cáo Phân tử**: Tự động tạo báo cáo chi tiết cho từng bệnh nhân (`patient_gene_report.py`).
+Dự án này triển khai một hệ thống AI tiên tiến nhằm dự đoán tiên lượng sống sót cho bệnh nhân Ung thư não (Glioblastoma Multiforme - GBM) sử dụng kiến trúc **Mamba (Selective State Space Model)**.
 
 ---
 
-## 🏗️ Kiến trúc Kỹ thuật (Architecture & Innovations)
+## 🖼️ Hình ảnh Kết quả (Demo Visualizations)
 
-Dự án áp dụng mô hình Hybrid tiên tiến nhất hiện nay trong lĩnh vực Tin sinh học:
+Dưới đây là một số kết quả trực quan hóa từ mô hình đã được triển khai:
 
-### 1. Denoising Autoencoder (DAE) - Bộ lọc Nhiễu Sinh học
-Trước khi đưa vào mô hình chính, dữ liệu biểu hiện gen thô được đưa qua một bộ **Autoencoder**. Bước này giúp nén 16,383 đặc trưng xuống còn 128 chiều latent, đồng thời loại bỏ các nhiễu đo lường thường gặp trong dữ liệu sinh học.
+### 1. Phân tầng rủi ro (Survival Stratification)
+Mô hình phân loại bệnh nhân thành các nhóm nguy cơ khác nhau với sự khác biệt rõ rệt về thời gian sống thêm (p-value < 0.05).
+![KM Plot LGG](./results/km_plot_test_lgg.png)
+*Biểu đồ Kaplan-Meier trên tập dữ liệu ngoại kiểm TCGA-LGG.*
 
-### 2. Mamba-SSM: Cuộc cách mạng trong học chuỗi gen
-Thay vì sử dụng MLP đơn thuần, chúng tôi áp dụng kiến trúc **Mamba**. Điểm cải tiến nằm ở việc **Token hóa không gian Latent**:
-*   Vector 128 chiều được chia thành một chuỗi gồm 8 tokens.
-*   Lớp Mamba học các mối quan hệ phi tuyến phức tạp giữa các cụm đặc trưng này, tương tự như cách Transformer xử lý ngôn ngữ nhưng với hiệu suất cao hơn và khả năng bắt lấy các phụ thuộc xa tốt hơn.
+### 2. Hiệu suất Phân loại (Classification Performance)
+Đường cong ROC và ma trận nhầm lẫn cho thấy khả năng dự đoán chính xác nhóm nguy cơ.
+![ROC Curve](./results/classification/roc_curve.png)
+![Confusion Matrix](./results/classification/confusion_matrix.png)
 
-### 3. Phân tích Dấu ấn Sinh học (Global & Local Biomarkers)
-Sử dụng phương pháp **Integrated Gradients** để xác định:
-*   **Malignant Genes**: Các gen làm tăng nguy cơ tử vong khi biểu hiện cao.
-*   **Protective Genes**: Các gen bảo vệ, giúp kéo dài thời gian sống.
+### 3. Bản đồ Dấu ấn Sinh học (Biomarker Landscape)
+Dashboard trực quan hóa các gen đóng vai trò chủ chốt trong việc xác định tiên lượng bệnh.
+![Biomarker Dashboard](./results/biomarkers/biomarker_landscape_dashboard.png)
 
 ---
 
-## 🚀 Hướng dẫn Cài đặt & Sử dụng
+## 🏗️ Kiến trúc Kỹ thuật (Technical Architecture)
 
-### Cài đặt môi trường
+Hệ thống kết hợp **Denoising Autoencoder (DAE)** để nén dữ liệu gen nhiễu và **Mamba-SSM** để học các tương quan phi tuyến giữa các cụm đặc trưng. Điểm đặc biệt là cơ chế **Tokenization** của không gian latent, biến dữ liệu gen thành một chuỗi đặc trưng để Mamba xử lý.
+
+---
+
+## 🛠️ Hướng dẫn Demo: Dự đoán cho Bệnh nhân mới (Custom Patient)
+
+Để sử dụng AI dự đoán cho một bệnh nhân mới hoặc dữ liệu bên ngoài, hãy làm theo các bước sau:
+
+### 1. Chuẩn bị dữ liệu đầu vào
+Bạn cần tạo một file CSV (ví dụ: `new_patient.csv`) có định dạng như sau:
+- **Cột đầu tiên**: ID bệnh nhân.
+- **Các cột tiếp theo**: Tên gen (phải bao gồm đủ 16,383 gen mà mô hình yêu cầu).
+- **Giá trị**: Mức độ biểu hiện gen đã qua chuẩn hóa (Log2-transform).
+
+### 2. Chạy dự đoán AI
+Sử dụng script `test_custom_patient.py` để xem kết quả dự đoán rủi ro:
 ```bash
-conda create -n mamba_env python=3.10
-conda activate mamba_env
-pip install -r requirements.txt
-# Lưu ý: Yêu cầu cài đặt thư viện mamba-ssm từ nguồn chính thức
+python scripts/test_custom_patient.py --file path/to/new_patient.csv --idx 0
 ```
 
-### Sử dụng mô hình đã huấn luyện
-Toàn bộ trọng số tốt nhất đã được lưu trong thư mục `checkpoints/`. Bạn có thể sử dụng ngay để dự đoán:
+### 3. Xuất báo cáo chi tiết
+Để xem báo cáo phân tử chi tiết bao gồm các gen quan trọng nhất của bệnh nhân đó:
 ```bash
-# Đánh giá trên các bộ validation (CGGA, REMBRANDT, v.v.)
-python scripts/evaluate.py test_cgga_325
-
-# Trực quan hóa kết quả phân loại
-python scripts/visualize_classifier.py
+python scripts/patient_gene_report.py
 ```
+![Sample Report](./results/patient_report_CGGA_1001.png)
+*Ví dụ về một báo cáo bệnh nhân được tạo tự động.*
 
 ---
 
@@ -62,16 +63,13 @@ python scripts/visualize_classifier.py
 
 | Script | Công dụng |
 | :--- | :--- |
-| `patient_gene_report.py` | Tạo báo cáo chi tiết cấp độ bệnh nhân |
-| `extract_global_biomarkers.py` | Tìm kiếm các gen chủ chốt ảnh hưởng đến tiên lượng |
-| `visualize_biomarker_landscape.py` | Bản đồ nhiệt (Heatmap) về các dấu ấn sinh học |
-| `predict_condition.py` | Dự đoán tình trạng bệnh nhân dựa trên mẫu gen |
+| `extract_global_biomarkers.py` | Tìm kiếm các gen chủ chốt toàn cầu |
+| `visualize_classifier.py` | Vẽ biểu đồ ROC, KM và ma trận nhầm lẫn |
+| `visualize_biomarker_landscape.py` | Tạo Dashboard về dấu ấn sinh học |
 
 ---
 
 ## 🎯 Kết quả Thực nghiệm (Benchmarks)
-
-Hệ thống đã được kiểm chứng trên các quần thể độc lập với chỉ số C-index ổn định:
 
 | Dataset | Type | Samples | C-index |
 | :--- | :--- | :--- | :--- |
@@ -82,7 +80,4 @@ Hệ thống đã được kiểm chứng trên các quần thể độc lập v
 
 ---
 
-## 🌐 Nguồn dữ liệu & Bản quyền
-
-Dữ liệu được tổng hợp từ **TCGA (GDC)**, **CGGA**, và **NCBI GEO**. 
-Mã nguồn phát hành dưới giấy phép **MIT**. Mọi đóng góp hoặc thắc mắc vui lòng liên hệ qua GitHub Issues.
+**Lưu ý**: Để hiển thị hình ảnh trên GitHub, hãy đảm bảo bạn đã đẩy thư mục `results/` lên cùng với mã nguồn.
