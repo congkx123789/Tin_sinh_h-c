@@ -1,65 +1,88 @@
-# 🧬 GBM Survival Prediction using Mamba-SSM
+# 🧬 GBM Survival Mamba: Advanced Prognosis using Hybrid DAE-Mamba
 
-Mô hình học sâu tiên tiến sử dụng kiến trúc **Mamba (Selective State Space Model)** kết hợp với **Denoising Autoencoder (DAE)** để dự đoán tiên lượng sống sót của bệnh nhân u não (Glioblastoma) dựa trên dữ liệu biểu hiện gen.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Hướng dẫn bắt đầu (Quick Start)
+Dự án này triển khai một hệ thống AI tiên tiến nhằm dự đoán tiên lượng sống sót cho bệnh nhân Ung thư não (Glioblastoma Multiforme - GBM). Đây là sự kết hợp đột phá giữa **Denoising Autoencoder (DAE)** và **Mamba (Selective State Space Model)** để xử lý dữ liệu biểu hiện gen đa chiều.
 
-### 1. Cài đặt môi trường
-Dự án yêu cầu Python 3.10+ và các thư viện trong `requirements.txt`.
+---
+
+## 🌟 Tính năng Nổi bật (Key Features)
+
+*   **Dự đoán Tiên lượng Chính xác (Precision Prognosis)**: Tính toán chỉ số rủi ro (Risk Score) cá thể hóa với độ tin cậy cao trên nhiều quần thể kiểm chứng.
+*   **Giải thích mô hình (Explainable AI - XAI)**: Trích xuất các "Dấu ấn sinh học" (Biomarkers) có ảnh hưởng lớn nhất đến kết quả sống sót thông qua cơ chế tính toán Gradient.
+*   **Khả năng tương thích đa nền tảng**: Xử lý mượt mà cả dữ liệu **RNA-Seq** và **Microarray** nhờ quy trình tiền xử lý đồng bộ 16,383 gen.
+*   **Hệ thống Báo cáo Phân tử**: Tự động tạo báo cáo chi tiết cho từng bệnh nhân (`patient_gene_report.py`).
+
+---
+
+## 🏗️ Kiến trúc Kỹ thuật (Architecture & Innovations)
+
+Dự án áp dụng mô hình Hybrid tiên tiến nhất hiện nay trong lĩnh vực Tin sinh học:
+
+### 1. Denoising Autoencoder (DAE) - Bộ lọc Nhiễu Sinh học
+Trước khi đưa vào mô hình chính, dữ liệu biểu hiện gen thô được đưa qua một bộ **Autoencoder**. Bước này giúp nén 16,383 đặc trưng xuống còn 128 chiều latent, đồng thời loại bỏ các nhiễu đo lường thường gặp trong dữ liệu sinh học.
+
+### 2. Mamba-SSM: Cuộc cách mạng trong học chuỗi gen
+Thay vì sử dụng MLP đơn thuần, chúng tôi áp dụng kiến trúc **Mamba**. Điểm cải tiến nằm ở việc **Token hóa không gian Latent**:
+*   Vector 128 chiều được chia thành một chuỗi gồm 8 tokens.
+*   Lớp Mamba học các mối quan hệ phi tuyến phức tạp giữa các cụm đặc trưng này, tương tự như cách Transformer xử lý ngôn ngữ nhưng với hiệu suất cao hơn và khả năng bắt lấy các phụ thuộc xa tốt hơn.
+
+### 3. Phân tích Dấu ấn Sinh học (Global & Local Biomarkers)
+Sử dụng phương pháp **Integrated Gradients** để xác định:
+*   **Malignant Genes**: Các gen làm tăng nguy cơ tử vong khi biểu hiện cao.
+*   **Protective Genes**: Các gen bảo vệ, giúp kéo dài thời gian sống.
+
+---
+
+## 🚀 Hướng dẫn Cài đặt & Sử dụng
+
+### Cài đặt môi trường
 ```bash
 conda create -n mamba_env python=3.10
 conda activate mamba_env
 pip install -r requirements.txt
-# Lưu ý: Cần cài đặt mamba-ssm từ https://github.com/state-spaces/mamba
+# Lưu ý: Yêu cầu cài đặt thư viện mamba-ssm từ nguồn chính thức
 ```
 
-### 2. Cấu trúc dữ liệu
-Thư mục `data/` hiện tại được để trống trên GitHub để giữ repository nhẹ. Bạn cần chuẩn bị dữ liệu theo cấu trúc sau:
-- `data/01_raw/`: Chứa các file TSV/CSV gốc từ TCGA, CGGA, GEO.
-- `data/02_processed/`: Chứa dữ liệu đã qua tiền xử lý (X.csv, y.csv).
-
-*Xem chi tiết tại [data/DATA_MAP.md](./data/DATA_MAP.md).*
-
-### 3. Sử dụng mô hình đã huấn luyện
-Sử dụng các trọng số trong `checkpoints/` để dự đoán hoặc đánh giá:
+### Sử dụng mô hình đã huấn luyện
+Toàn bộ trọng số tốt nhất đã được lưu trong thư mục `checkpoints/`. Bạn có thể sử dụng ngay để dự đoán:
 ```bash
-# Đánh giá trên tập dữ liệu cụ thể
-python scripts/evaluate.py [split_name]
+# Đánh giá trên các bộ validation (CGGA, REMBRANDT, v.v.)
+python scripts/evaluate.py test_cgga_325
 
-# Dự đoán cho một bệnh nhân cụ thể (custom data)
-python scripts/test_custom_patient.py --input path/to/patient_data.csv
+# Trực quan hóa kết quả phân loại
+python scripts/visualize_classifier.py
 ```
 
-## 📊 Các công cụ phân tích (Scripts)
+---
 
-Dự án cung cấp bộ công cụ mạnh mẽ để phân tích và báo cáo:
+## 📂 Danh mục Công cụ (Analysis Tools)
 
-- **Dự đoán & Báo cáo**:
-    - `patient_gene_report.py`: Tạo báo cáo chi tiết về biểu hiện gen và mức độ nguy cơ cho từng bệnh nhân.
-    - `predict_condition.py`: Dự đoán tình trạng bệnh dựa trên biểu hiện gen.
-- **Trực quan hóa**:
-    - `visualize_classifier.py`: Vẽ biểu đồ phân loại và ma trận nhầm lẫn.
-    - `visualize_biomarker_landscape.py`: Trực quan hóa bản đồ các dấu ấn sinh học (biomarkers).
-- **Phân tích Dấu ấn sinh học**:
-    - `extract_global_biomarkers.py`: Tìm ra các gen có ảnh hưởng lớn nhất đến tiên lượng sống sót.
-    - `analyze_treatment.py`: Phân tích mối liên hệ giữa điều trị và biểu hiện gen.
+| Script | Công dụng |
+| :--- | :--- |
+| `patient_gene_report.py` | Tạo báo cáo chi tiết cấp độ bệnh nhân |
+| `extract_global_biomarkers.py` | Tìm kiếm các gen chủ chốt ảnh hưởng đến tiên lượng |
+| `visualize_biomarker_landscape.py` | Bản đồ nhiệt (Heatmap) về các dấu ấn sinh học |
+| `predict_condition.py` | Dự đoán tình trạng bệnh nhân dựa trên mẫu gen |
 
-## 🎯 Kết quả Thực nghiệm (C-index)
+---
 
-Mô hình đạt kết quả ổn định trên nhiều quần thể kiểm chứng độc lập:
+## 🎯 Kết quả Thực nghiệm (Benchmarks)
 
-| Nguồn dữ liệu | Số mẫu | Nền tảng | C-index |
+Hệ thống đã được kiểm chứng trên các quần thể độc lập với chỉ số C-index ổn định:
+
+| Dataset | Type | Samples | C-index |
 | :--- | :--- | :--- | :--- |
-| **TCGA-GBM** (Internal) | 150+ | RNA-Seq | **0.6151** |
-| **TCGA-LGG** (External) | 500+ | RNA-Seq | **0.6569** |
-| **CGGA-325** | 325 | RNA-Seq | **0.6325** |
-| **CGGA-693** | 693 | RNA-Seq | **0.5793** |
+| **TCGA-GBM** | RNA-Seq | 150+ | **0.6151** |
+| **TCGA-LGG** | RNA-Seq | 500+ | **0.6569** |
+| **CGGA-325** | RNA-Seq | 325 | **0.6325** |
+| **CGGA-693** | RNA-Seq | 693 | **0.5793** |
 
-## 📂 Sơ đồ tổ chức (Architecture)
-```text
-├── checkpoints/      # Trọng số mô hình (DAE & Mamba)
-├── models/           # Định nghĩa kiến trúc (Mamba, Autoencoder, SurvivalNet)
-├── scripts/          # Scripts huấn luyện, tiền xử lý và phân tích
-├── utils/            # Các hàm bổ trợ xử lý dữ liệu
-└── results/          # Kết quả đầu ra (Biểu đồ, CSV báo cáo)
-```
+---
+
+## 🌐 Nguồn dữ liệu & Bản quyền
+
+Dữ liệu được tổng hợp từ **TCGA (GDC)**, **CGGA**, và **NCBI GEO**. 
+Mã nguồn phát hành dưới giấy phép **MIT**. Mọi đóng góp hoặc thắc mắc vui lòng liên hệ qua GitHub Issues.
