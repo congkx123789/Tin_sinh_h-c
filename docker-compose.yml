@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  gbm-survival-app:
+    build: .
+    container_name: gbm_survival_container
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    restart: always

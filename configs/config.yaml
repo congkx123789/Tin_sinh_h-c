@@ -14,14 +14,13 @@ autoencoder:
   epochs: 100
   noise_factor: 0.2
 
-mamba_survival:
-  d_model: 128
-  n_layers: 4
-  d_state: 16
-  learning_rate: 0.0001
-  batch_size: 16
-  epochs: 150
+lightgbm:
+  learning_rate: 0.05
+  num_leaves: 31
+  feature_fraction: 0.8
+  bagging_fraction: 0.8
+  num_boost_round: 1000
 
 paths:
   ae_checkpoints: "checkpoints/ae_weights/"
-  mamba_checkpoints: "checkpoints/mamba_weights/"
+  lightgbm_checkpoints: "checkpoints/lightgbm_weights/"

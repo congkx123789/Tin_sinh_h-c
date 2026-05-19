@@ -1,7 +1,7 @@
 torch>=2.0.0
 torchvision
 torchaudio
-# mamba-ssm  # Requires CUDA Toolkit to compile; install manually if needed
+# Core dependencies
 pandas
 numpy
 scikit-learn
@@ -12,3 +12,6 @@ seaborn
 tqdm
 ipykernel
 requests
+lightgbm
+shap
+streamlit

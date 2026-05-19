@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 venv/
 .venv/
-mamba_env/
 .env
 
 # Data (Excluded per user request)
@@ -12,9 +11,7 @@ data/
 *.zip
 
 # Results
-# We allow images for README demonstration
-!results/**/*.png
-results/**/*.csv
+!results/
 
 # Security & Keys (MANDATORY EXCLUDE)
 *.key

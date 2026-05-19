@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 
-def run_script(script_path):
+def run_script(script_path, extra_args=[]):
     # Set PYTHONPATH to root directory
     env = os.environ.copy()
     env["PYTHONPATH"] = os.getcwd() + os.pathsep + env.get("PYTHONPATH", "")
@@ -11,7 +11,7 @@ def run_script(script_path):
     if os.path.exists(".venv/bin/python"):
         python_bin = os.path.abspath(".venv/bin/python")
 
-    cmd = [python_bin, script_path]
+    cmd = [python_bin, script_path] + extra_args
     print(f"Running: {' '.join(cmd)}")
     subprocess.run(cmd, env=env)
 
@@ -25,12 +25,15 @@ def main():
         "setup": "scripts/setup_data.py",
         "preprocess": "scripts/preprocess_data.py",
         "train_ae": "scripts/train_ae.py",
-        "train_mamba": "scripts/train_mamba.py",
-        "evaluate": "scripts/evaluate.py"
+        "train_lightgbm": "scripts/train_lightgbm.py",
+        "evaluate": "scripts/evaluate.py",
+        "explain": "scripts/explain_model.py",
+        "importance": "scripts/extract_gene_importance.py",
+        "gatk": "scripts/integrate_gatk_features.py"
     }
 
     if task in scripts:
-        run_script(scripts[task])
+        run_script(scripts[task], sys.argv[2:])
     else:
         print(f"Unknown task: {task}. Available: {', '.join(scripts.keys())}")
 
