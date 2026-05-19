@@ -14,7 +14,7 @@ st.markdown("---")
 # 1. Sidebar - Configuration
 st.sidebar.header("Model Configuration")
 data_split = st.sidebar.selectbox("Select Test Cohort", 
-                                ["test_internal", "test_lgg", "test_cgga", "test_rembrandt"])
+                                ["test_internal", "test_lgg", "test_cgga", "test_rembrandt", "test_gse4412"])
 
 # 2. Main Content
 col1, col2 = st.columns([1, 1])
