@@ -80,7 +80,10 @@ for i in range(num_models):
 val_preds = np.mean([m.predict(X_val_scaled) for m in models], axis=0)
 ```
 
+![Hình 3.5: Đường cong kiểm chứng RMSE của 10 mô hình con và Ensemble LightGBM trung bình](results/lgbm_ensemble_training_curves.png)
+
 ---
+
 
 ### 3.5.2. Triển khai mô hình SurvivalMambaNet (Hà Vũ Công thực hiện)
 
@@ -134,7 +137,10 @@ Dữ liệu sinh học RNA-Seq có số chiều cực kỳ lớn và chứa nhi�
   - Lớp giải mã (Decoder) tái cấu trúc lại biểu hiện gen gốc từ không gian ẩn $128$ chiều về không gian biểu hiện gen gốc và tính toán độ lỗi bằng **MSE Loss**:
     $$\mathcal{L}_{\text{MSE}} = \frac{1}{N} \sum_{k=1}^{N} \|x_k - \widehat{x}_k\|^2$$
 
+![Hình 3.6: Đường cong hội tụ độ lỗi tái cấu trúc MSE của Denoising Autoencoder (DAE)](results/dae_training_validation_loss.png)
+
 Không gian ẩn $128$ chiều thu được sau DAE là đại diện cực kỳ cô đọng, giữ lại trọn vẹn thông tin sinh học của các con đường chuyển hóa, đồng thời triệt tiêu hoàn toàn các sai số kỹ thuật.
+
 
 ##### B. Khối Selective State Space (Mamba)
 Không gian ẩn $128$ chiều sau khi trích xuất được đưa vào khối mạng **Mamba**.
@@ -167,3 +173,10 @@ Cơ chế lan truyền ngược (backpropagation) tính toán đạo hàm của 
 Sự kết hợp của hai mô hình này trong luận văn của **Hà Vũ Công** tạo nên thế gọng kìm vững chắc:
 * **Mô hình LightGBM Ensemble** mang lại hiệu quả dự đoán cực kỳ ổn định, chính xác trên các bộ dữ liệu ngoại kiểm nhỏ nhờ khả năng điều chuẩn chuẩn L1/L2 và cơ chế bagging.
 * **Mô hình SurvivalMambaNet** mở ra hướng đi mới của học máy y sinh, chứng minh năng lực khai phá dữ liệu không gian ẩn quy mô lớn từ RNA-Seq bằng cơ chế Selective State Space tiên tiến nhất, tối ưu trực tiếp chỉ số sống sót lâm sàng.
+
+![Hình 3.7: Tiến trình tối ưu hóa hàm tổn thất Cox và chỉ số C-index của SurvivalMambaNet](results/survivalmambanet_training_curves.png)
+
+![Hình 3.8: So sánh hiệu năng tiên lượng (chỉ số C-index) giữa các mô hình trên các cohort độc lập](results/model_performance_comparison.png)
+
+![Hình 3.9: Lưới đường cong sinh tồn Kaplan-Meier phân tách hai nhóm nguy cơ cao/thấp trên các cohort](results/km_curves_grid.png)
+
