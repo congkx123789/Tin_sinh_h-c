@@ -1,8 +1,7 @@
 ### SLIDE 1: GIỚI THIỆU ĐỀ TÀI
 *   **Đơn vị:** TRƯỜNG ĐẠI HỌC CÔNG NGHỆ - ĐHQGHN
 *   **Khoa:** KHOA CÔNG NGHỆ THÔNG TIN
-*   **Loại báo cáo:** BÁO CÁO DỰ ÁN TIN SINH HỌC
-*   **Đề tài:** ĐẶC TẢ NGHIÊN CỨU VỀ GLIOBLASTOMA PROGNOSTIC SOLUTIONS
+*   **Đề tài:** NGHIÊN CỨU VỀ GLIOBLASTOMA PROGNOSTIC SOLUTIONS
 *   **Giảng viên hướng dẫn:** GS. TS. Lê Sỹ Vinh
 *   **Nhóm thực hiện (Nhóm 6):** Hà Vũ Công & Trần Thị Hà Giang
 
