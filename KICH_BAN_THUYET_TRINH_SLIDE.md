@@ -1,7 +1,10 @@
 ### SLIDE 1: GIỚI THIỆU ĐỀ TÀI
-*   **Tiêu đề chính:** HỆ THỐNG TIÊN LƯỢNG SINH TỒN ĐA PHƯƠNG THỨC CHO BỆNH NHÂN U NÃO ĐỆM (GLIOBLASTOMA) SỬ DỤNG HỌC MÁY VÀ HỌC SÂU TÍCH HỢP
-*   **Tiêu đề phụ:** Multi-modal Integration of RNA-Seq & GATK DNA Variants
-*   **Người thực hiện:** Hà Vũ Công & Nhóm nghiên cứu
+*   **Đơn vị:** TRƯỜNG ĐẠI HỌC CÔNG NGHỆ - ĐHQGHN
+*   **Khoa:** KHOA CÔNG NGHỆ THÔNG TIN
+*   **Loại báo cáo:** BÁO CÁO DỰ ÁN TIN SINH HỌC
+*   **Đề tài:** ĐẶC TẢ NGHIÊN CỨU VỀ GLIOBLASTOMA PROGNOSTIC SOLUTIONS
+*   **Giảng viên hướng dẫn:** GS. TS. Lê Sỹ Vinh
+*   **Nhóm thực hiện (Nhóm 6):** Hà Vũ Công & Trần Thị Hà Giang
 
 ---
 
@@ -79,7 +82,7 @@
 ---
 
 ### SLIDE 9: MÔ HÌNH 1: ENSEMBLE LIGHTGBM - CẢI TIẾN CHỐNG OVERFITTING
-*   **Hyperparameter Tuning (Hà Vũ Công thực hiện):**
+*   **Hyperparameter Tuning (Nhóm 6 thực hiện):**
     *   **Objective:** regression / poisson (mô hình hóa hàm tỷ lệ rủi ro sống sót).
     *   **Regularization:** L1 & L2 penalty (`lambda_l1: 1.0`, `lambda_l2: 1.0`) đóng vai trò như bộ chọn gen nhúng để triệt tiêu các đặc trưng gen nhiễu.
     *   **Complexity Control:** `num_leaves = 15` (giới hạn cấu trúc cây nông để tăng tính tổng quát hóa).
@@ -100,7 +103,7 @@
 ---
 
 ### SLIDE 11: MÔ HÌNH 2: SURVIVALMAMBANET - KHỐI KHỬ NHIỄU DAE
-*   **DAE for Representation Learning (Hà Vũ Công thực hiện):**
+*   **DAE for Representation Learning (Nhóm 6 thực hiện):**
     *   *Input Denoising:* Thêm nhiễu Gauss ngẫu nhiên (hệ số nhiễu 0.2) vào dữ liệu gen thô, buộc mạng học sâu phải tự lọc bỏ nhiễu thiết bị đo đạc để tái lập cấu trúc gen gốc.
     *   *Dimensionality Reduction:* Nén dữ liệu gen khổng lồ (hơn 16.000 chiều) qua Encoder phi tuyến ReLU để hội tụ tại không gian ẩn (latent space) **128 chiều sạch nhiễu**.
 *   **Đồ thị hội tụ độ lỗi tái cấu trúc MSE của DAE:**
